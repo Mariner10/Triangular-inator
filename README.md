@@ -13,3 +13,20 @@ Make sure you make ammends to ```constants.py``` with your life360 username and 
    Triangular-inator/logs/Dylan
    Triangular-inator/logs/Pete
 ```
+The ```life360.py``` file is the framework to actually connect to life-360. ***I did not make this.*** I made both ```logger360.py``` & ```visualizer.py```.
+
+logger360 is intended to run headlessly on a computer with constant wifi access. It will continuously scrape life360's server for data on your circle, at which point it will log this data to a .csv file.
+
+logger360 logs the following:
+
+- lattitude
+- longitude
+- battery health
+- name
+- date
+- current time
+
+It was *supposed* to log driving and wifi-status as well, but it seems to be broken on either the ```life360.py```'s end or on life360's servers.
+
+visualizer is for viewing any and all data that is collected in the csv files. just ensure it is in a directory that has a proper logs folder format (as mentioned above) as well as the csv files and it should run without a problem.
+
