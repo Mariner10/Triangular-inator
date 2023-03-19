@@ -30,3 +30,6 @@ It was *supposed* to log driving and wifi-status as well, but it seems to be bro
 
 visualizer is for viewing any and all data that is collected in the csv files. just ensure it is in a directory that has a proper logs folder format (as mentioned above) as well as the csv files and it should run without a problem.
 
+![Screenshot of my program](screenshots/ss1.png)
+
+![Screenshot of my program](screenshots/ss2.png)
