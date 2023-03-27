@@ -1,11 +1,12 @@
 from life360 import life360
 from datetime import datetime
 from pytz import timezone
-tz = timezone('EST')
+from constants import life360_username,life360_password,timeZone
+tz = timezone(timeZone)
 import csv
 import os
 from time import sleep
-from constants import life360_username,life360_password
+
 
 
 #logpath variable
