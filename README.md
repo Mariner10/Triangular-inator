@@ -31,5 +31,14 @@ It was *supposed* to log driving and wifi-status as well, but it seems to be bro
 visualizer is for viewing any and all data that is collected in the csv files. just ensure it is in a directory that has a proper logs folder format (as mentioned above) as well as the csv files and it should run without a problem.
 
 ![Screenshot of my program](screenshots/ss1.png)
+<sub>Dynamic information previewing. (i.e if you're just viewing one person it won't show their name, just viewing one date it won't show the date.)</sub>
 
 ![Screenshot of my program](screenshots/ss2.png)
+<sub>Addition of path plotting for each member.</sub>
+
+![Screenshot of my program](screenshots/ss3.png)
+<sub>POI generation based on how many logs are taken of members at specific locations. The paramaters for POI flagging can be adjusted by the two sliders. </sub>
+
+![Screenshot of my program](screenshots/ss4.png)
+<sub>Colored paths for easier differentiation between people.</sub>
+
