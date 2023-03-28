@@ -15,7 +15,7 @@ Make sure you make ammends to ```constants.py``` with your life360 username and 
 ```
 # Requirements
 
-Ensure you have python installed (>3.0), then open a terminal and run -
+Ensure you have [python installed](https://www.python.org/downloads/) (>3.0), then open a terminal and run -
 
 ```pip3 install -r <PATH-OF-requirements.txt>```
 This will install all requirements.
