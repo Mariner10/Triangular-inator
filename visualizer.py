@@ -7,6 +7,8 @@ import csv
 import datetime
 from analysis import create_location_dictionary,clean_location_dictionary
 from elapsedTime import calculate_time_spent
+from constants import deviceType,remote_logs_directory,local_logs_directory,serverHostname,serverPort,serverUser,serverPass
+import sys
 
 root = Tk()
 root.title('Location Viewer')
@@ -16,7 +18,14 @@ root.resizable(0,0)
 map_widget = TkinterMapView(root, width=600, height=600, corner_radius=0)
 map_widget.set_position(38.06699076662477, -78.87535905288384)
 map_widget.set_zoom(6)
-main_path = str(os.path.join(os.path.dirname(os.path.abspath(__file__)))) + "/"
+main_path = str(os.path.join(os.path.dirname(os.path.abspath(__file__))))
+if deviceType == "windows":
+    iHateWindows = "\logs\ "
+    logPath = main_path + iHateWindows.strip()
+else:
+    logPath = main_path + "/logs/"
+
+
 
 
 Dict = {}
@@ -26,7 +35,7 @@ name = ""
 csv_Files = []
 def collect_data(name):
     #Getting all of the CSV Files
-    for path, subdirs, files in os.walk(main_path + "logs/" + name):
+    for path, subdirs, files in os.walk(logPath + name):
         for name in files:
             if ".csv" in name:
                 csv_Files.append(str(os.path.join(path, name)))
@@ -300,8 +309,8 @@ def calculatePaths():
     color = "deeppink1"
     pathColor = "deeppink4"
     colorCount = 0
-    colors = ["firebrick2","darkorange","gold1","chartreuse","royalblue1","darkorchid1","magenta","maroon","slategray1"]
-    pathColors = ["firebrick4","lightsalmon4","orange3","springgreen3","dodgerblue4","darkorchid4","magenta4","sienna4","slategray4"]
+    colors = ["firebrick2","lightsalmon4","gold1","chartreuse","royalblue1","darkorchid1","magenta","maroon","slategray1"]
+    pathColors = ["firebrick4","darkorange","orange3","springgreen3","dodgerblue4","darkorchid4","magenta4","sienna4","slategray4"]
     prevName = activeNames[0]
     multiplePeople = False
 
@@ -317,9 +326,28 @@ def calculatePaths():
 
 
 calcButton = Button(root,text = "Plot Data", font=("Helvetica Neue", 24,'bold'),command=lambda ewq = "" : calculatePaths(), background="blue", disabledforeground="yellow")
-calcButton.place(x=720,y=760,anchor="center")
+calcButton.place(x=820,y=760,anchor="center")
 
- 
+def getLogs():
+    from sftp_handler import fileGrab
+    import shutil
+    try:
+        for subdirs in os.walk(logPath):
+            for dir in subdirs:
+                shutil.rmtree(dir)
+    except TypeError:
+        print("deleted all logs!")
+
+    print("\nRedownloading now!")
+    os.mkdir(logPath)
+    fileGrab(serverHostname,serverPort,serverUser,serverPass,remote_logs_directory,local_logs_directory)
+    exit()
+
+
+
+getLogsButton = Button(root,text = "Download Logs", font=("Helvetica Neue", 12,'bold'),command=lambda ewq = "" : getLogs(), background="blue", disabledforeground="yellow")
+
+getLogsButton.place(x=670,y=740,anchor="center")
 
 gridRow = 60
 gridColumn = 80
