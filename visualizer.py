@@ -1,6 +1,5 @@
 import os
-from tkinter import *
-from PIL import ImageTk, Image  
+from tkinter import * 
 from tkintermapview import TkinterMapView
 from tkcalendar import Calendar, DateEntry
 import csv
