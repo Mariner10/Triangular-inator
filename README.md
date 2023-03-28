@@ -13,6 +13,15 @@ Make sure you make ammends to ```constants.py``` with your life360 username and 
    Triangular-inator/logs/Dylan
    Triangular-inator/logs/Pete
 ```
+# Requirements
+
+Ensure you have python installed (>3.0), then open a terminal and run -
+
+```pip3 install -r <PATH-OF-requirements.txt>```
+This will install all requirements.
+
+
+
 The ```life360.py``` file is the framework to actually connect to life-360. ***I did not make this.*** I made both ```logger360.py``` & ```visualizer.py```.
 
 logger360 is intended to run headlessly on a computer with constant wifi access. It will continuously scrape life360's server for data on your circle, at which point it will log this data to a .csv file.
