@@ -1,154 +1,138 @@
 from life360 import life360
-from datetime import datetime
-from pytz import timezone
-from constants import life360_username,life360_password,timeZone
-tz = timezone(timeZone)
-import csv
-import os
+from constants import life360_password,life360_username,debugMode,timeZone
 from time import sleep
+from datetime import datetime
+import os
+from pytz import timezone
+import csv
+tz = timezone(timeZone)
 
 
 
-#logpath variable
+
 mainpath = str(os.path.join(os.path.dirname(os.path.abspath(__file__)))) + "/"
+if debugMode == True: print("Mainpath: " + mainpath + "\n")
 logpath = mainpath + "logs/"
+if debugMode == True: print("Logpath: " + logpath + "\n")
 
 
-current_datetime = datetime.now(tz)
-string = str(current_datetime)
-dateAndTime = string.split()
-date = dateAndTime[0]
+username = life360_username
+password = life360_password
+# basic authorization hash (base64 if you want to decode it and see the sekrets)
+# this is a googleable or sniffable value. i imagine life360 changes this sometimes. 
+authorization_token = "Y2F0aGFwYWNyQVBoZUtVc3RlOGV2ZXZldnVjSGFmZVRydVl1ZnJhYzpkOEM5ZVlVdkE2dUZ1YnJ1SmVnZXRyZVZ1dFJlQ1JVWQ=="
 
+#instantiate the API
+api = life360(authorization_token=authorization_token, username=username, password=password)
 
-if __name__ == "__main__":
-
-    authorization_token = "cFJFcXVnYWJSZXRyZTRFc3RldGhlcnVmcmVQdW1hbUV4dWNyRUh1YzptM2ZydXBSZXRSZXN3ZXJFQ2hBUHJFOTZxYWtFZHI0Vg=="
-    username = life360_username
-    password = life360_password
-
-    def collect_data(user):
-        try:
-            api = life360(authorization_token=authorization_token, username=username, password=password)
-            if api.authenticate():
-
-    
-                circles =  api.get_circles()
-                id = circles[0]['id']
-                circle = api.get_circle(id)
-
-        
-                
-                print("Circle name:", circle['name'])
-                print("Members (" + circle['memberCount'] + "):")
-                for m in circle['members']:
-
-                    if (m['firstName'] != user):
-                        pass
-                    else:
-                        print("Today's Date: " + str(dateAndTime[0] + "\n Current Time: " + str(dateAndTime[1])))
-                        print("\tName:", m['firstName'],m['lastName'])
-                        firstName = m['firstName']
-                        lastName = m['lastName']
-                        print("\tLocation:" , m['location']['shortAddress'], m['location']['address2'])
-                        latitude = m['location']['latitude']
-                        longitude = m['location']['longitude']
-                        print("\tBattery level:" , m['location']['battery'] +"%")
-                        batteryLevel = m['location']['battery']
-                        drivingStatus = m['location']['isDriving']
-                        print("\tCharging?", m['location']['charge'])
-                        batteryCharging = m['location']['charge']
-                        wifiStatus = m['location']['wifiState']
-                        print("\t")
-                        return(firstName,lastName,latitude,longitude,batteryLevel,batteryCharging,wifiStatus,drivingStatus)
-
-            else:
-                print("Error authenticating")
-
-        except:
-            return("Life-360_Error","","","","","","","")
-
-def log_user_data(user):
-
-    # get current date and time
-    current_datetime = datetime.now(tz)
-    string = str(current_datetime)
-    dateAndTime = string.split()
-    date = dateAndTime[0]
-
-    # convert datetime obj to string
-
-    isExist = os.path.exists(logpath + user + "/" + date + "_" + user + ".csv")
-
-    if isExist == False:
-        # create a file object along with extension
-        filename = logpath + user + "/" + date + "_" + user + ".csv"
-        file = open(filename, 'w')
-        
-        print("File created : ", str(filename))
-        file.close()
-
-        filename = logpath + user + "/" + date + "_" + user + ".csv"
-        fields = ['Name', 'Coordinates', 'Time', 'Battery Level', "Currently Charging?", "WiFi Connection?", "Currently Driving?"]
-        with open(filename, 'w') as csvfile:
-            # creating a csv writer object
-            csvwriter = csv.writer(csvfile)
-            # writing the fields
-            csvwriter.writerow(fields)
-
-    else:
-        print("file exists")
-        pass
-
-    data = collect_data(user)
-    current_datetime = datetime.now(tz).strftime("%I:%M %p")
-
-    if data[0] == "Life-360_Error":
-        pass
-
-    else:
-        filename = logpath + user + "/" + date + "_" + user + ".csv"
-        with open(filename, 'a') as file:
-            writer = csv.writer(file)
-            row = [data[0] + " " + data[1], data[2] + "," + data[3], current_datetime, data[4] + "%", data[5], data[6], data[7]]
-            writer.writerow(row)
-        sleep(10)
-    
-
+#Authenticate! 
 names = []
-if __name__ == "__main__":
- 
-    authorization_token = "cFJFcXVnYWJSZXRyZTRFc3RldGhlcnVmcmVQdW1hbUV4dWNyRUh1YzptM2ZydXBSZXRSZXN3ZXJFQ2hBUHJFOTZxYWtFZHI0Vg=="
+
+class Person:
+    def __init__(self,firstName,lastName,latitude,longitude,batteryLevel,batteryCharging,inTransit,speed,startTimestamp,endTimestamp):
+        self.firstName = firstName
+        self.lastName = lastName
+        self.latitude = latitude
+        self.longitude = longitude
+        self.batteryLevel = batteryLevel
+        self.batteryCharging = batteryCharging
+        self.inTransit = inTransit
+        self.speed = speed
+        self.startTimestamp = startTimestamp
+        self.endTimestamp = endTimestamp
     
+    def saveMyFile(self):
+        if debugMode == True: print("Func- log_user_data(" + self.firstName + ")" + "\n")
 
-    username = life360_username
-    password = life360_password
+        # get current date and time
+        current_datetime = datetime.now(tz)
+        string = str(current_datetime)
+        dateAndTime = string.split()
+        date = dateAndTime[0]
 
-    api = life360(authorization_token=authorization_token, username=username, password=password)
+        # convert datetime obj to string
+
+        isExist = os.path.exists(logpath + self.firstName + "/" + date + "_" + self.firstName + ".csv")
+
+        if debugMode == True: print(logpath + self.firstName + "/" + date + "_" + self.firstName + ".csv" + "\n")
+        if debugMode == True: print(str(isExist) + "\n")
+
+        if isExist == False:
+            # create a file object along with extension
+            filename = logpath + self.firstName + "/" + date + "_" + self.firstName + ".csv"
+            file = open(filename, 'w')
+            
+            print("File created : ", str(filename))
+            file.close()
+
+            filename = logpath + self.firstName + "/" + date + "_" + self.firstName + ".csv"
+            fields = ['Name', 'Coordinates', 'Time', 'Battery Level', "Currently Charging?", "In Transit?", "Current Speed", "Start Timestamp", "End Timestamp"]
+            with open(filename, 'w') as csvfile:
+                # creating a csv writer object
+                csvwriter = csv.writer(csvfile)
+                # writing the fields
+                csvwriter.writerow(fields)
+
+        else:
+            print("file exists")
+            pass
+        
+        data = [self.firstName,self.lastName,self.latitude,self.longitude,self.batteryLevel,self.batteryCharging,self.inTransit,self.speed,self.startTimestamp,self.endTimestamp]
+        
+
+        current_datetime = datetime.now(tz).strftime("%I:%M %p")
+
+        if data[0] == "Life-360_Error":
+            if debugMode == True: print("Life-360 Couldn't Authenticate" + "\n")
+            pass
+
+        else:
+            filename = logpath + self.firstName + "/" + date + "_" + self.firstName + ".csv"
+            with open(filename, 'a') as file:
+                writer = csv.writer(file)
+                row = [data[0] + " " + data[1], data[2] + "," + data[3], current_datetime, data[4] + "%", data[5], data[6], data[7],data[8],data[9]]
+                if debugMode == True: print("Writing row: " + str(row) + "\n")
+                writer.writerow(row)
+
+def collect_data():
+    personData = Person("Tomato","Head","Tomato","Town","3 mini sheilds","100 sheild","dropping in tilted","battlebus speed","Storm","Closing")
     if api.authenticate():
-
         #Grab some circles returns json
         circles =  api.get_circles()
-        
         #grab id
         id = circles[0]['id']
-
         #Let's get your circle!
         circle = api.get_circle(id)
+        for m in circle['members']:
+            print("\tName:", m['firstName'],m['lastName'])
+            personData.firstName = m['firstName']
+            personData.lastName = m['lastName']
+            avatar = m['avatar']
+            email = m['loginEmail']
+            phone = m['loginPhone']
+            print("\tLocation:" , m['location']['shortAddress'], m['location']['address2'])
+            personData.startTimestamp = datetime.fromtimestamp(int(m['location']['startTimestamp']))
+            personData.endTimestamp = datetime.fromtimestamp(int(m['location']['endTimestamp'])) # YOU NEED TO USE strftime('%Y-%m-%d %H:%M:%S') TO USE THESE DATETIME OBJECTs!!!!
 
-        for userdata in circle['members']:
-            name = str(userdata['firstName'])
-            names.append(name)
+            personData.latitude = m['location']['latitude']
+            personData.longitude = m['location']['longitude']
+            personData.inTransit = m['location']['inTransit']
+            personData.speed = m['location']['speed']
+            print("\tBattery level:" , m['location']['battery'] +"%")
+            personData.batteryLevel = m['location']['battery']
+            print("\tCharging?", m['location']['charge'])
+            personData.batteryCharging = m['location']['charge']
+            print("\t")
 
-while True:
-
-    while True:
-
-        for name in names:
+            personData.saveMyFile()
             
-            log_user_data(name)
+            
+if __name__ == "__main__":
+    while True:
+        try:
+            collect_data()
+            sleep(55)
 
-
-
-
-
-
+        except KeyboardInterrupt:
+            if debugMode == True: print("Exiting..." + "\n")
+            exit()

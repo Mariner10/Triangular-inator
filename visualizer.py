@@ -5,7 +5,6 @@ from tkcalendar import Calendar, DateEntry
 import csv
 import datetime
 from analysis import create_location_dictionary,clean_location_dictionary
-from elapsedTime import calculate_time_spent
 from constants import deviceType,remote_logs_directory,local_logs_directory,serverHostname,serverPort,serverUser,serverPass
 import sys
 
@@ -23,6 +22,9 @@ if deviceType == "windows":
     logPath = main_path + iHateWindows.strip()
 else:
     logPath = main_path + "/logs/"
+
+colors = ["firebrick2","lightsalmon4","gold1","chartreuse","royalblue1","darkorchid1","magenta","maroon","slategray1"]
+pathColors = ["firebrick4","darkorange","orange3","springgreen3","dodgerblue4","darkorchid4","magenta4","sienna4","slategray4"]
 
 
 
@@ -61,11 +63,16 @@ def collect_data(name):
                 name = row[0]
                 time = row[2]
                 battery = row[3]
+                batteryCharging = row[4]
+                inTransit = row[5]
+                speed = row[6]
+                startTimestamp = [7]
+                endTimestamp = [8]
                 if name in names:
                     pass
                 else:
                     names.append(name)
-                Dict.setdefault(name, []).append([name, latitude, longitude, time, dateFromFilename, battery])
+                Dict.setdefault(name, []).append([name, latitude, longitude, time, dateFromFilename, battery,batteryCharging,inTransit,speed,startTimestamp,endTimestamp])
            
 collect_data("")
 
@@ -176,12 +183,58 @@ def data_analysis(pin_precision,frequency_cutoff):
 
    
     for value in locations:
-            val = str(value)
-            lat, long = val.split(", ")
-            marker = map_widget.set_position(float(lat),float(long), marker=True, text= str("POI"),marker_color_circle = "black",marker_color_outside = "grey", text_color = "black")
+        val = str(value)
+        lat, long = val.split(", ")
+        marker = map_widget.set_position(float(lat),float(long), marker=True, text= str("POI"),marker_color_circle = "black",marker_color_outside = "grey", text_color = "black")
             
+def significant_locations(significance,accuracy):
+    from significantLocations import sort_data
+    reset_map()
 
-analyzeButton = Button(root,text = "Analyze POIs", font=("Helvetica Neue", 20,'bold'),command=lambda ewq = "" : data_analysis("",""), background="blue", disabledforeground="yellow")
+    if significance != "" and accuracy != "":
+        precision_value = significance
+        frequency_value = accuracy
+
+    else:
+        precision_value = int(precision_var.get())
+        frequency_value = int(frequency_var.get())
+
+    locationList = sort_data(frequency_value,precision_value)
+    prevName = "BigMan"
+    colorCount = 0
+    analyzed_names = []
+    namesAndColors = []
+    for spot in locationList:
+        if spot["Name"] not in analyzed_names:
+            analyzed_names.append(spot["Name"])
+            color = colors[colorCount]
+            pathColor = pathColors[colorCount]
+            namesAndColors.append({"Name" : spot["Name"], "Color" : color, "SecondaryColor" : pathColor})
+            colorCount += 1
+
+
+    
+    for spot in locationList:
+        lat = spot["Lattitude"]
+        long = spot["Longitude"]
+        name = spot["Name"]
+        name = name.split(" ")[0]
+        
+        for person in namesAndColors:
+            print(person["Name"])
+            print(name)
+            if name in person["Name"]:
+                color = person["Color"]
+                pathColor = person["SecondaryColor"]
+                print(color)
+                print(pathColor)
+
+        marker = map_widget.set_position(float(lat),float(long), marker=True, text= str(name + "'s POI"),marker_color_circle = pathColor,marker_color_outside = color, text_color = "black")
+    
+
+
+
+analyzeButton = Button(root,text = "Analyze POIs", font=("Helvetica Neue", 20,'bold'),command=lambda ewq = "" : significant_locations("",""), background="blue", disabledforeground="yellow")
 analyzeButton.place(x=755,y=400,anchor="center")
 
 def dateViewManager():
@@ -308,8 +361,6 @@ def calculatePaths():
     color = "deeppink1"
     pathColor = "deeppink4"
     colorCount = 0
-    colors = ["firebrick2","lightsalmon4","gold1","chartreuse","royalblue1","darkorchid1","magenta","maroon","slategray1"]
-    pathColors = ["firebrick4","darkorange","orange3","springgreen3","dodgerblue4","darkorchid4","magenta4","sienna4","slategray4"]
     prevName = activeNames[0]
     multiplePeople = False
 
