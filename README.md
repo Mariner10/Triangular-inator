@@ -5,13 +5,30 @@ Uses life360 API to access circle data, and store it away in daily .csv files fo
 
 ## Setup
 
-Make sure you make ammends to ```constants.py``` with your life360 username and password in order to effectively access the API. Also you need to create sub-folders within the logs folder, one for each member's ***first*** name in your group's circle.
+Make sure you add your information to ```constants.py```  in order to effectively access the API as well as use the visualizer. 
+
+- deviceType = Type of OS you are using, [macos or windows] (macos is same as linux in terms of file system structure)
+
+- debugMode = If you want output printed to the terminal based on what the program is doing live. (for logging or debugging purposes)
+
+- life360_username = Email associated with the life360 account you are logging in with.
+- life360_password = Password to your life 360 account.
+
+- timeZone = Timezone you are operating from. i.e 'America/New_York' (You can run the program without selecting a timezone and the program will print all timezones to choose from, then just paste yours into the timeZone variable.
+
+- remote_logs_directory = Where the logs are stored on the separate server you'd want to download them from. i.e "/home/pi/Triangular-inator/logs/"
+- local_logs_directory = Where the logs are stored on your machine. i.e "/Users/me/Desktop/Programming/Python/Triangular-inator/logs/"
+
+- serverHostname,serverPort,serverUser,serverPass = These variables are for accessing a separate server to download your data if it is not ran locally, if you have no intention on using this function you can leave these blank.
+
+
+You will need to create sub-folders within the logs folder, one for each member's ***first*** name in your group's circle.
 
 > _For example_
 ```
-   Triangular-inator/logs/Bob
-   Triangular-inator/logs/Dylan
-   Triangular-inator/logs/Pete
+   Triangular-inator/logs/Bob/{logs will be made here for Bob}
+   Triangular-inator/logs/Dylan/{logs will be made here for Dylan}
+   Triangular-inator/logs/Pete/{logs will be made here for Pete}
 ```
 # Requirements
 
@@ -22,20 +39,19 @@ This will install all requirements.
 
 
 
-The ```life360.py``` file is the framework to actually connect to life-360. ***I did not make this.*** I made both ```logger360.py``` & ```visualizer.py```.
+The ```life360.py``` file is the framework to actually connect to life-360. ***I did not make this.*** However every other file in this project is original.
 
-logger360 is intended to run headlessly on a computer with constant wifi access. It will continuously scrape life360's server for data on your circle, at which point it will log this data to a .csv file.
+logger360 is intended to run headlessly on a computer with constant internet access. It will continuously scrape life360's server for data on your circle, at which point it will log this data to a .csv file.
 
 logger360 logs the following:
 
-- lattitude
-- longitude
-- battery health
+- GPS coordinates (lattitude & longitude)
+- battery percentage and if currently plugged in
 - name
-- date
-- current time
-
-It was *supposed* to log driving and wifi-status as well, but it seems to be broken on either the ```life360.py```'s end or on life360's servers.
+- date & time
+- if person is currently in transit
+- geographic speed
+- timestamps for arriving / leaving a location
 
 visualizer is for viewing any and all data that is collected in the csv files. just ensure it is in a directory that has a proper logs folder format (as mentioned above) as well as the csv files and it should run without a problem.
 
