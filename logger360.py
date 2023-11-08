@@ -29,7 +29,7 @@ api = life360(authorization_token=authorization_token, username=username, passwo
 names = []
 
 class Person:
-    def __init__(self,firstName,lastName,latitude,longitude,batteryLevel,batteryCharging,inTransit,speed,startTimestamp,endTimestamp):
+    def __init__(self,firstName,lastName,latitude,longitude,batteryLevel,batteryCharging,inTransit,speed,startTimestamp,since):
         self.firstName = firstName
         self.lastName = lastName
         self.latitude = latitude
@@ -39,7 +39,7 @@ class Person:
         self.inTransit = inTransit
         self.speed = speed
         self.startTimestamp = startTimestamp
-        self.endTimestamp = endTimestamp
+        self.since = since
     
     def saveMyFile(self):
         if debugMode == True: print("Func- log_user_data(" + self.firstName + ")" + "\n")
@@ -77,7 +77,7 @@ class Person:
             print("file exists")
             pass
         
-        data = [self.firstName,self.lastName,self.latitude,self.longitude,self.batteryLevel,self.batteryCharging,self.inTransit,self.speed,self.startTimestamp,self.endTimestamp]
+        data = [self.firstName,self.lastName,self.latitude,self.longitude,self.batteryLevel,self.batteryCharging,self.inTransit,self.speed,self.startTimestamp,self.since]
         
 
         current_datetime = datetime.now(tz).strftime("%I:%M %p")
@@ -93,6 +93,30 @@ class Person:
                 row = [data[0] + " " + data[1], data[2] + "," + data[3], current_datetime, data[4] + "%", data[5], data[6], data[7],data[8],data[9]]
                 if debugMode == True: print("Writing row: " + str(row) + "\n")
                 writer.writerow(row)
+
+def format_date( d):
+    diff = datetime.utcnow() - d
+    s = diff.seconds
+    if diff.days > 7 or diff.days < 0:
+        return d.strftime('%d %b %y')
+    elif diff.days == 1:
+        return '1 day'
+    elif diff.days > 1:
+        return '{} days'.format(diff.days)
+    elif s <= 1:
+        return 'Active'
+    elif s < 60:
+        return '{} seconds'.format(s)
+    elif s < 120:
+        return '1 minute'
+    elif s < 3600:
+        return '{} minutes'.format(s/60)
+    elif s < 7200:
+        return '1 hour'
+    else:
+        return '{} hours'.format(s/3600)
+
+
 
 def collect_data():
     personData = Person("Tomato","Head","Tomato","Town","3 mini sheilds","100 sheild","dropping in tilted","battlebus speed","Storm","Closing")
@@ -112,7 +136,7 @@ def collect_data():
             phone = m['loginPhone']
             print("\tLocation:" , m['location']['shortAddress'], m['location']['address2'])
             personData.startTimestamp = datetime.fromtimestamp(int(m['location']['startTimestamp']))
-            personData.endTimestamp = datetime.fromtimestamp(int(m['location']['endTimestamp'])) # YOU NEED TO USE strftime('%Y-%m-%d %H:%M:%S') TO USE THESE DATETIME OBJECTs!!!!
+            personData.since = format_date(datetime.fromtimestamp(int(m['location']['since']))) # YOU NEED TO USE strftime('%Y-%m-%d %H:%M:%S') TO USE THESE DATETIME OBJECTs!!!!
 
             personData.latitude = m['location']['latitude']
             personData.longitude = m['location']['longitude']

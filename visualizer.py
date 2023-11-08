@@ -264,6 +264,7 @@ def trackingViewManger(name):
 togglePaths = BooleanVar()
 toggleMarkers = BooleanVar()
 togglePOI = BooleanVar()
+toggleSpeed = BooleanVar()
 
 
 
@@ -283,15 +284,20 @@ def mapSettings():
 
     pathToggle = Checkbutton(root,text = "Show Paths",variable=togglePaths, onvalue=True, offvalue=False,)
     
-    pathToggle.place(x=780,y=60,anchor="w")
+    pathToggle.place(x=780,y=50,anchor="w")
+    
 
     markerToggle = Checkbutton(root,text = "Show Markers",variable=toggleMarkers, onvalue=True, offvalue=False)
     markerToggle.select()
-    markerToggle.place(x=780,y=90,anchor="w")
+    markerToggle.place(x=780,y=80,anchor="w")
 
     POIToggle = Checkbutton(root,text = "Show POI's",variable=togglePOI, onvalue=True, offvalue=False,)
     
-    POIToggle.place(x=780,y=120,anchor="w")
+    POIToggle.place(x=780,y=110,anchor="w")
+
+    speedToggle = Checkbutton(root,text = "Show speed",variable=toggleSpeed, onvalue=True, offvalue=False,)
+    
+    speedToggle.place(x=780,y=140,anchor="w")
 
 
 
@@ -337,12 +343,30 @@ def personButtonCommand(name,color,pathColor,multiplePeople):
 
     for value in filtered_data:
         text = str(value[3])
+        if int(value[7]) != -1: speed = str(value[8])[:4]
+
+        if float(speed) > 10 and toggleSpeed.get():
+            text = str(value[3]) + "\n" + str(float(speed) * 2.237)[:4] + " mph"
+        else:
+            text = str(value[3])
+
         if multiplePeople == True:
-            text = str(value[0]) + " @ " + str(value[3])
+            if float(speed) > 10 and toggleSpeed.get():
+                text = str(value[0]) + " @ " + str(value[3]) + "\n" + str(float(speed) * 2.237)[:4] + " mph"
+            else:
+                text = str(value[0]) + " @ " + str(value[3])
+
         if MultipleDates == True:
-            text = str(value[3]) + "|" + str(value[4])
+            if float(speed) > 10 and toggleSpeed.get():
+                text = str(value[3]) + "|" + str(value[4]) + "\n" + str(float(speed) * 2.237)[:4] + " mph"
+            else:
+                text = str(value[3]) + "|" + str(value[4])
+
         if multiplePeople == True and MultipleDates == True:
-            text = str(value[0]) + " @ " + str(value[3]) + "|" + str(value[4])
+            if float(speed) > 10 and toggleSpeed.get():
+                text = str(value[0]) + " @ " + str(value[3]) + "|" + str(value[4]) + "\n" + str(float(speed) * 2.237)[:4] + " mph"
+            else:
+                text = str(value[0]) + " @ " + str(value[3]) + "|" + str(value[4])
 
         if toggleMarkers.get():
             map_widget.set_position(float(value[1]),float(value[2]), marker=True, text=text,marker_color_circle = pathColor,marker_color_outside = color, text_color = "black")
