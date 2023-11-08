@@ -57,6 +57,7 @@ visualizer is for viewing any and all data that is collected in the csv files. j
 
 ![Screenshot of my program](screenshots/ss5.png)
 <sub>Colored paths for easier differentiation between people.</sub>
+
 ![Screenshot of my program](screenshots/ss6.png)
 <sub>A bigger view.</sub>
 
