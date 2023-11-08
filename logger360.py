@@ -3,12 +3,13 @@ from constants import life360_password,life360_username,debugMode,timeZone
 from time import sleep
 from datetime import datetime
 import os
-from pytz import timezone
+from pytz import timezone, all_timezones_set
 import csv
-tz = timezone(timeZone)
 
-
-
+if timeZone == "":
+    print('all the supported timezones set:', all_timezones_set, '\n')
+else:
+    tz = timezone(timeZone)
 
 mainpath = str(os.path.join(os.path.dirname(os.path.abspath(__file__)))) + "/"
 if debugMode == True: print("Mainpath: " + mainpath + "\n")
@@ -127,6 +128,7 @@ def collect_data():
         id = circles[0]['id']
         #Let's get your circle!
         circle = api.get_circle(id)
+        print(circle)
         for m in circle['members']:
             print("\tName:", m['firstName'],m['lastName'])
             personData.firstName = m['firstName']
