@@ -56,8 +56,9 @@ logger360 logs the following:
 visualizer is for viewing any and all data that is collected in the csv files. just ensure it is in a directory that has a proper logs folder format (as mentioned above) as well as the csv files and it should run without a problem.
 
 ![Screenshot of my program](screenshots/ss5.png)
-![Screenshot of my program](screenshots/ss6.png)
 <sub>Colored paths for easier differentiation between people.</sub>
+![Screenshot of my program](screenshots/ss6.png)
+<sub>A bigger view.</sub>
 
 ![Screenshot of my program](screenshots/ss4.png)
 <sub>Display logged speed of user if they were moving / driving during log.</sub>
