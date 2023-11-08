@@ -8,7 +8,7 @@ deviceType = "macos"
 life360_username = ""
 life360_password = ""
 
-timeZone = 'America/New_York'
+timeZone = ""
 
 remote_logs_directory = ""
 local_logs_directory = ""
