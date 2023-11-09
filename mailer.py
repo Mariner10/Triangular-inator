@@ -1,5 +1,6 @@
-from constants import deviceType,remote_logs_directory,local_logs_directory,serverHostname,serverPort,serverUser,serverPass,timeZone,debugMode,yourGmail,gmail_SENDING_appPass
+from constants import deviceType,timeZone,debugMode,yourGmail,gmail_SENDING_appPass
 from logger360 import collect_data
+from sftp_handler import getLogs
 from datetime import datetime
 import os
 from pytz import timezone
@@ -28,6 +29,7 @@ if deviceType == "windows":
     logPath = main_path + iHateWindows.strip()
 else:
     logPath = main_path + "/logs/"
+
 
 Dict = {}
 names = []
@@ -238,26 +240,12 @@ def send_email_out(recipient):
     mail.quit()
 
 
-def getLogs():
-    from sftp_handler import fileGrab
-    import shutil
-    try:
-        for subdirs in os.walk(logPath):
-            for dir in subdirs:
-                shutil.rmtree(dir)
-    except TypeError:
-        print("deleted all logs!")
-
-    print("\nRedownloading now!")
-    os.mkdir(logPath)
-    fileGrab(serverHostname,serverPort,serverUser,serverPass,remote_logs_directory,local_logs_directory)
-
 for email in emailList:
     print("Sending email to " + email)
     msg = MIMEMultipart('alternative')
     msg['Subject'] = "Weekly Update!"
     msg['From'] = yourGmail
     msg['To'] = email
-    send_email_out(email)
+    #send_email_out(email)
     print("Sent! Waiting a sec to send next email!")
     sleep(1)

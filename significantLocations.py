@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from constants import deviceType,remote_logs_directory,local_logs_directory,serverHostname,serverPort,serverUser,serverPass
+from constants import deviceType
 import sys
 import csv
 import datetime

@@ -6,8 +6,10 @@ import os
 from pytz import timezone, all_timezones_set
 import csv
 
+# Printing the timezones if you don't have one selected.
 if timeZone == "":
     print('all the supported timezones set:', all_timezones_set, '\n')
+    exit()
 else:
     tz = timezone(timeZone)
 
@@ -29,6 +31,7 @@ api = life360(authorization_token=authorization_token, username=username, passwo
 #Authenticate! 
 names = []
 
+# This is our person class witch holds all the data and handles how the data is logged into the csv files.
 class Person:
     def __init__(self,firstName,lastName,latitude,longitude,batteryLevel,batteryCharging,inTransit,speed,startTimestamp,since):
         self.firstName = firstName
@@ -95,6 +98,7 @@ class Person:
                 if debugMode == True: print("Writing row: " + str(row) + "\n")
                 writer.writerow(row)
 
+# This just makes dates look prettier.
 def format_date( d):
     diff = datetime.utcnow() - d
     s = diff.seconds
@@ -120,6 +124,7 @@ def format_date( d):
 
 
 def collect_data(save):
+    # fortnite meme
     personData = Person("Tomato","Head","Tomato","Town","3 mini sheilds","100 sheild","dropping in tilted","battlebus speed","Storm","Closing")
     avatarList = []
     emailList = []
@@ -128,7 +133,7 @@ def collect_data(save):
         circles =  api.get_circles()
         #grab id
         id = circles[0]['id']
-        #Let's get your circle!
+        #grab your circle
         circle = api.get_circle(id)
         if debugMode == True: print(circle)
         for m in circle['members']:
@@ -167,6 +172,11 @@ if __name__ == "__main__":
     while True:
         try:
             collect_data(True)
+            # This sleep timer is very important here. While it may not seem like it,
+            # the Life360 API has a limit to how many requests you can make per minute.
+            # Exceeding this limit will cause life360 to return with a blank json, which will
+            # break the collect data json decoder because it cant handle blank json files. 
+            # actually I'm going to go handle those errors right now 11/9/23 11:24 AM lol
             sleep(55)
 
         except KeyboardInterrupt:

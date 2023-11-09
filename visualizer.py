@@ -5,7 +5,8 @@ from tkcalendar import Calendar, DateEntry
 import csv
 import datetime
 from analysis import create_location_dictionary,clean_location_dictionary
-from constants import deviceType,remote_logs_directory,local_logs_directory,serverHostname,serverPort,serverUser,serverPass
+from constants import logPath
+from sftp_handler import getLogs
 import sys
 
 root = Tk()
@@ -16,12 +17,6 @@ root.resizable(0,0)
 map_widget = TkinterMapView(root, width=600, height=600, corner_radius=0)
 map_widget.set_position(38.06699076662477, -78.87535905288384)
 map_widget.set_zoom(6)
-main_path = str(os.path.join(os.path.dirname(os.path.abspath(__file__))))
-if deviceType == "windows":
-    iHateWindows = "\logs\ "
-    logPath = main_path + iHateWindows.strip()
-else:
-    logPath = main_path + "/logs/"
 
 colors = ["firebrick2","lightsalmon4","gold1","chartreuse","royalblue1","darkorchid1","magenta","maroon","slategray1"]
 pathColors = ["firebrick4","darkorange","orange3","springgreen3","dodgerblue4","darkorchid4","magenta4","sienna4","slategray4"]
@@ -88,19 +83,10 @@ def getDates():
     dates.sort()
 getDates()
 
-
-
-
-
 precision_var = IntVar()
 frequency_var = IntVar()
 latlongLabel = Label(root,text="~111 km \n\n~11.1 km \n\n~1.1 km \n\n~110 m \n\n~11 m \n\n~1.1 m \n\n~0.11 m", font= ("Helvetica Neue", 9,'italic'))
 latlongLabel.place(x=670,y=280,anchor="center")
-
-    
-
-
-    
 
 def PointsOfInterest():
     precisionScale = Scale(root,from_=0,to=6,variable=precision_var,orient='vertical',length=150)
@@ -187,7 +173,7 @@ def data_analysis(pin_precision,frequency_cutoff):
         lat, long = val.split(", ")
         marker = map_widget.set_position(float(lat),float(long), marker=True, text= str("POI"),marker_color_circle = "black",marker_color_outside = "grey", text_color = "black")
             
-def significant_locations(significance,accuracy):
+def genPois(significance,accuracy):
     from significantLocations import sort_data
     reset_map()
 
@@ -232,9 +218,7 @@ def significant_locations(significance,accuracy):
         marker = map_widget.set_position(float(lat),float(long), marker=True, text= str(name + "'s POI"),marker_color_circle = pathColor,marker_color_outside = color, text_color = "black")
     
 
-
-
-analyzeButton = Button(root,text = "Analyze POIs", font=("Helvetica Neue", 20,'bold'),command=lambda ewq = "" : significant_locations("",""), background="blue", disabledforeground="yellow")
+analyzeButton = Button(root,text = "Analyze POIs", font=("Helvetica Neue", 20,'bold'),command=lambda ewq = "" : genPois("",""), background="blue", disabledforeground="yellow")
 analyzeButton.place(x=755,y=400,anchor="center")
 
 def dateViewManager():
@@ -260,7 +244,7 @@ def trackingViewManger(name):
         idx = listbox.get(0, "end").index(name)
         listbox.delete(idx)
 
-
+#Checkmark Boolean Values
 togglePaths = BooleanVar()
 toggleMarkers = BooleanVar()
 togglePOI = BooleanVar()
@@ -298,7 +282,6 @@ def mapSettings():
     speedToggle = Checkbutton(root,text = "Show speed",variable=toggleSpeed, onvalue=True, offvalue=False,)
     
     speedToggle.place(x=780,y=140,anchor="w")
-
 
 
 classicButton = Button(root,text = "Reset Map", font=("Helvetica Neue", 10,'bold'),command=lambda ewq = "" :reset_map(), background="blue", disabledforeground="yellow")
@@ -377,8 +360,6 @@ def personButtonCommand(name,color,pathColor,multiplePeople):
             else:
                 skipFirst2coords += 1
         
-
-
     
 def calculatePaths():
     reset_map()
@@ -401,22 +382,6 @@ def calculatePaths():
 
 calcButton = Button(root,text = "Plot Data", font=("Helvetica Neue", 24,'bold'),command=lambda ewq = "" : calculatePaths(), background="blue", disabledforeground="yellow")
 calcButton.place(x=820,y=760,anchor="center")
-
-def getLogs():
-    from sftp_handler import fileGrab
-    import shutil
-    try:
-        for subdirs in os.walk(logPath):
-            for dir in subdirs:
-                shutil.rmtree(dir)
-    except TypeError:
-        print("deleted all logs!")
-
-    print("\nRedownloading now!")
-    os.mkdir(logPath)
-    fileGrab(serverHostname,serverPort,serverUser,serverPass,remote_logs_directory,local_logs_directory)
-    exit()
-
 
 
 getLogsButton = Button(root,text = "Download Logs", font=("Helvetica Neue", 12,'bold'),command=lambda ewq = "" : getLogs(), background="blue", disabledforeground="yellow")
@@ -446,7 +411,6 @@ for value in names:
     gridColumn += 40
 
 
-#print(calculate_time_spent(Dict))
 
 mapSettings()
 helperText()
