@@ -14,3 +14,6 @@ remote_logs_directory = ""
 local_logs_directory = ""
 
 serverHostname,serverPort,serverUser,serverPass = '',int(),'',''
+
+yourGmail = ""
+gmail_SENDING_appPass = ""
