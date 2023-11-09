@@ -199,7 +199,7 @@ def significant_locations(significance,accuracy):
         precision_value = int(precision_var.get())
         frequency_value = int(frequency_var.get())
 
-    locationList = sort_data(frequency_value,precision_value)
+    locationList = sort_data(frequency_value,1000000000000,precision_value)
     prevName = "BigMan"
     colorCount = 0
     analyzed_names = []

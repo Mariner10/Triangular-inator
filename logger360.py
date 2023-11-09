@@ -119,8 +119,10 @@ def format_date( d):
 
 
 
-def collect_data():
+def collect_data(save):
     personData = Person("Tomato","Head","Tomato","Town","3 mini sheilds","100 sheild","dropping in tilted","battlebus speed","Storm","Closing")
+    avatarList = []
+    emailList = []
     if api.authenticate():
         #Grab some circles returns json
         circles =  api.get_circles()
@@ -128,15 +130,15 @@ def collect_data():
         id = circles[0]['id']
         #Let's get your circle!
         circle = api.get_circle(id)
-        print(circle)
+        if debugMode == True: print(circle)
         for m in circle['members']:
-            print("\tName:", m['firstName'],m['lastName'])
+            if debugMode == True: print("\tName:", m['firstName'],m['lastName'])
             personData.firstName = m['firstName']
             personData.lastName = m['lastName']
             avatar = m['avatar']
             email = m['loginEmail']
             phone = m['loginPhone']
-            print("\tLocation:" , m['location']['shortAddress'], m['location']['address2'])
+            if debugMode == True: print("\tLocation:" , m['location']['shortAddress'], m['location']['address2'])
             personData.startTimestamp = datetime.fromtimestamp(int(m['location']['startTimestamp']))
             personData.since = format_date(datetime.fromtimestamp(int(m['location']['since']))) # YOU NEED TO USE strftime('%Y-%m-%d %H:%M:%S') TO USE THESE DATETIME OBJECTs!!!!
 
@@ -144,19 +146,27 @@ def collect_data():
             personData.longitude = m['location']['longitude']
             personData.inTransit = m['location']['inTransit']
             personData.speed = m['location']['speed']
-            print("\tBattery level:" , m['location']['battery'] +"%")
+            if debugMode == True: print("\tBattery level:" , m['location']['battery'] +"%")
             personData.batteryLevel = m['location']['battery']
-            print("\tCharging?", m['location']['charge'])
+            if debugMode == True: print("\tCharging?", m['location']['charge'])
             personData.batteryCharging = m['location']['charge']
-            print("\t")
+            if debugMode == True: print("\t")
+            if save == True:
+                personData.saveMyFile()
+            else:
+                avatarList.append(avatar)
+                emailList.append(email)
+                
+    if save == False:
+        return avatarList,emailList
 
-            personData.saveMyFile()
+            
             
             
 if __name__ == "__main__":
     while True:
         try:
-            collect_data()
+            collect_data(True)
             sleep(55)
 
         except KeyboardInterrupt:
