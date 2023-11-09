@@ -1,5 +1,5 @@
 # Triangular-inator
-Uses life360 API to access circle data, and store it away in daily .csv files for later viewing and data analysis.
+Uses life360 API to access circle data, and store it away in daily .csv files for later viewing, data analysis, and group notifications and records!
 
 ### Credits to Harper Reed  (```https://github.com/pnbruckner/life360.git```) for creating the life360 client I used for this project.
 
@@ -20,6 +20,9 @@ Make sure you add your information to ```constants.py```  in order to effectivel
 - local_logs_directory = Where the logs are stored on your machine. i.e "/Users/me/Desktop/Programming/Python/Triangular-inator/logs/"
 
 - serverHostname,serverPort,serverUser,serverPass = These variables are for accessing a separate server to download your data if it is not ran locally, if you have no intention on using this function you can leave these blank.
+  
+- yourGmail = This is the gmail account that will be sending out updates to all the participants in the life360 circle!
+- gmail_SENDING_appPass = this is the [app password you can generate](https://itsupport.umd.edu/itsupport?id=kb_article_view&sysparm_article=KB0015112) for the gmail account that allows it to send and receive mail.
 
 
 You will need to create sub-folders within the logs folder, one for each member's ***first*** name in your group's circle.
@@ -53,13 +56,16 @@ logger360 logs the following:
 - geographic speed
 - timestamps for arriving / leaving a location
 
-visualizer is for viewing any and all data that is collected in the csv files. just ensure it is in a directory that has a proper logs folder format (as mentioned above) as well as the csv files and it should run without a problem.
+Visualizer is for viewing any and all data that is collected in the csv files. just ensure it is in a directory that has a proper logs folder format (as mentioned above) as well as the csv files and it should run without a problem.
 
 ![Screenshot of my program](screenshots/ss5.png)
 <sub>Colored paths for easier differentiation between people.</sub>
 
 ![Screenshot of my program](screenshots/ss6.png)
 <sub>A bigger view.</sub>
+
+![Screenshot of my program](screenshots/ss7.png)
+<sub>An example of the emails that get sent from mailer.py.</sub>
 
 ![Screenshot of my program](screenshots/ss4.png)
 <sub>Display logged speed of user if they were moving / driving during log.</sub>
