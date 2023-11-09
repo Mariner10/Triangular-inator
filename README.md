@@ -64,7 +64,7 @@ Visualizer is for viewing any and all data that is collected in the csv files. j
 ![Screenshot of my program](screenshots/ss6.png)
 <sub>A bigger view.</sub>
 
-![Screenshot of my program](screenshots/ss7.png)
+![Screenshot of my program](screenshots/ss7.jpg)
 <sub>An example of the emails that get sent from mailer.py.</sub>
 
 ![Screenshot of my program](screenshots/ss4.png)
