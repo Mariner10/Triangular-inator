@@ -384,7 +384,7 @@ calcButton = Button(root,text = "Plot Data", font=("Helvetica Neue", 24,'bold'),
 calcButton.place(x=820,y=760,anchor="center")
 
 
-getLogsButton = Button(root,text = "Download Logs", font=("Helvetica Neue", 12,'bold'),command=lambda ewq = "" : getLogs(), background="blue", disabledforeground="yellow")
+getLogsButton = Button(root,text = "Download Logs", font=("Helvetica Neue", 12,'bold'),command=lambda ewq = "" : getLogs(True), background="blue", disabledforeground="yellow")
 
 getLogsButton.place(x=670,y=740,anchor="center")
 

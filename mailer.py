@@ -1,7 +1,7 @@
 from constants import deviceType,timeZone,debugMode,yourGmail,gmail_SENDING_appPass
 from logger360 import collect_data
 from sftp_handler import getLogs
-from datetime import datetime
+from datetime import datetime,timedelta
 import os
 from pytz import timezone
 import csv
@@ -36,19 +36,26 @@ names = []
 dates = []
 name = ""
 csv_Files = []
-def collect_csv(name):
+def collect_csv_through_dates(name,pastTimeDelta,date):
+    week_ago = date - timedelta(days=pastTimeDelta)
     #Getting all of the CSV Files
+    if debugMode == True: print("Processing the following files:\n")
     for path, subdirs, files in os.walk(logPath + name):
         for name in files:
             if ".csv" in name:
-                csv_Files.append(str(os.path.join(path, name)))
+                nameDateTime = datetime.strptime(name[:10],'%Y-%m-%d').date()
+                if nameDateTime >= week_ago:
+                    csv_Files.append(str(os.path.join(path, name)))
+                    
+                    if debugMode == True: print("| " + name + " |")
+                    
 
             else:
                 pass
 
+    if debugMode == True: print("Done.\n")
     #Reading all of the CSV files and converting their data to a dictionary
     
-    # ^ empty dictionary
     
     for user_File in csv_Files:
         with open(user_File, 'r') as csvfile:
@@ -73,7 +80,9 @@ def collect_csv(name):
                 else:
                     names.append(name)
                 Dict.setdefault(name, []).append([name, latitude, longitude, time, dateFromFilename, battery,batteryCharging,inTransit,speed])
-        
+
+
+
 avatarList, emailList = collect_data(False)
 temp = []
 for avatar in avatarList:
@@ -96,7 +105,7 @@ winnerSpeed = float(9207.23)
 def getSpeedWinner():
     topSpeed = float(0)
     winner = "Tomatohead"
-    collect_csv("")
+    collect_csv_through_dates("",7,datetime.now(tz).date())
     for name in names:
         for value in Dict[name]:
             if float(value[8]) >= 10:
@@ -239,13 +248,14 @@ def send_email_out(recipient):
     mail.sendmail(yourGmail, recipient, msg.as_string())
     mail.quit()
 
-
-for email in emailList:
-    print("Sending email to " + email)
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = "Weekly Update!"
-    msg['From'] = yourGmail
-    msg['To'] = email
-    #send_email_out(email)
-    print("Sent! Waiting a sec to send next email!")
-    sleep(1)
+def groupEmail():
+    global msg
+    for email in emailList:
+        print("Sending email to " + email)
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = "Weekly Update!"
+        msg['From'] = yourGmail
+        msg['To'] = email
+        #send_email_out(email)
+        print("Sent! Waiting a sec to send next email!\n")
+        sleep(1)

@@ -38,7 +38,7 @@ def fileGrab(host,port,username,password,remotepath,localpath):
 
     get_r_portable(sftp, remotepath, localpath, preserve_mtime=False)
 
-def getLogs():
+def getLogs(exitBool):
     from sftp_handler import fileGrab
     import shutil
     try:
@@ -51,3 +51,6 @@ def getLogs():
     print("\nRedownloading now!")
     os.mkdir(logPath)
     fileGrab(serverHostname,serverPort,serverUser,serverPass,remote_logs_directory,local_logs_directory)
+
+    if exitBool == True:
+        exit()

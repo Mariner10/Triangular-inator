@@ -27,9 +27,10 @@ authorization_token = "Y2F0aGFwYWNyQVBoZUtVc3RlOGV2ZXZldnVjSGFmZVRydVl1ZnJhYzpkO
 
 #instantiate the API
 api = life360(authorization_token=authorization_token, username=username, password=password)
-
-#Authenticate! 
+ 
 names = []
+
+sundayFlag = False
 
 # This is our person class witch holds all the data and handles how the data is logged into the csv files.
 class Person:
@@ -166,8 +167,24 @@ def collect_data(save):
         return avatarList,emailList
 
             
-            
-            
+def prepareEmail():
+    from mailer import groupEmail
+    global sundayFlag
+    time = datetime.now(tz).hour
+    now = datetime.now(tz)
+    weekday = datetime.weekday(now) 
+    if weekday == 6:
+        if sundayFlag != True:
+            if time >= 15:
+                sundayFlag = True
+                print("Sending the emails out!\n")
+                groupEmail()
+
+    else:
+        sundayFlag = False
+    
+
+                   
 if __name__ == "__main__":
     while True:
         try:
@@ -177,8 +194,10 @@ if __name__ == "__main__":
             # Exceeding this limit will cause life360 to return with a blank json, which will
             # break the collect data json decoder because it cant handle blank json files. 
             # actually I'm going to go handle those errors right now 11/9/23 11:24 AM lol
-            sleep(55)
+            sleep(30)
+            prepareEmail()
+            sleep(25)
 
         except KeyboardInterrupt:
-            if debugMode == True: print("Exiting..." + "\n")
+            if debugMode == True: print("\nExiting..." + "\n")
             exit()
