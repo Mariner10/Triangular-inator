@@ -256,6 +256,6 @@ def groupEmail():
         msg['Subject'] = "Weekly Update!"
         msg['From'] = yourGmail
         msg['To'] = email
-        #send_email_out(email)
+        send_email_out(email)
         print("Sent! Waiting a sec to send next email!\n")
         sleep(1)
