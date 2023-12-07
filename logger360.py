@@ -65,7 +65,11 @@ class Person:
         if isExist == False:
             # create a file object along with extension
             filename = logpath + self.firstName + "/" + date + "_" + self.firstName + ".csv"
-            file = open(filename, 'w')
+            try:
+                file = open(filename, 'w')
+            except FileNotFoundError:
+                os.mkdir(logpath + self.firstName + "/")
+                file = open(filename, 'w')
             
             print("File created : ", str(filename))
             file.close()
@@ -195,7 +199,7 @@ if __name__ == "__main__":
             # break the collect data json decoder because it cant handle blank json files. 
             # actually I'm going to go handle those errors right now 11/9/23 11:24 AM lol
             sleep(30)
-            prepareEmail()
+            #prepareEmail()
             sleep(25)
 
         except KeyboardInterrupt:
