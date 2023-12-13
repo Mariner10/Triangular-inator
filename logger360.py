@@ -6,12 +6,21 @@ import os
 from pytz import timezone, all_timezones_set
 import csv
 
+
 # Printing the timezones if you don't have one selected.
 if timeZone == "":
     print('all the supported timezones set:', all_timezones_set, '\n')
     exit()
 else:
     tz = timezone(timeZone)
+
+timeNow = datetime.now(tz)
+timStirng = str(timeNow.strftime("%m-%d-%Y %I:%M:%S%p"))
+dateTimestring = timStirng.split()
+datetring = dateTimestring[0]
+timetring = dateTimestring[1]
+
+print(" ~ Program Executed ~ \n| Name: logger360.py \n| Time: " + timetring + "\n| Date: " + datetring)
 
 mainpath = str(os.path.join(os.path.dirname(os.path.abspath(__file__)))) + "/"
 if debugMode == True: print("Mainpath: " + mainpath + "\n")
@@ -30,7 +39,7 @@ api = life360(authorization_token=authorization_token, username=username, passwo
  
 names = []
 
-sundayFlag = False
+
 
 # This is our person class witch holds all the data and handles how the data is logged into the csv files.
 class Person:
@@ -69,9 +78,10 @@ class Person:
                 file = open(filename, 'w')
             except FileNotFoundError:
                 os.mkdir(logpath + self.firstName + "/")
+                print("NEW MEMBER : ", self.firstName)
                 file = open(filename, 'w')
             
-            print("File created : ", str(filename))
+            if debugMode == True: print("File created : ", str(filename))
             file.close()
 
             filename = logpath + self.firstName + "/" + date + "_" + self.firstName + ".csv"
@@ -82,8 +92,7 @@ class Person:
                 # writing the fields
                 csvwriter.writerow(fields)
 
-        else:
-            print("file exists")
+        else:   
             pass
         
         data = [self.firstName,self.lastName,self.latitude,self.longitude,self.batteryLevel,self.batteryCharging,self.inTransit,self.speed,self.startTimestamp,self.since]
@@ -140,55 +149,40 @@ def collect_data(save):
         id = circles[0]['id']
         #grab your circle
         circle = api.get_circle(id)
-        if debugMode == True: print(circle)
+        #if debugMode == True: print(circle) #this is a lot of output...
         for m in circle['members']:
-            if debugMode == True: print("\tName:", m['firstName'],m['lastName'])
-            personData.firstName = m['firstName']
-            personData.lastName = m['lastName']
-            avatar = m['avatar']
-            email = m['loginEmail']
-            phone = m['loginPhone']
-            if debugMode == True: print("\tLocation:" , m['location']['shortAddress'], m['location']['address2'])
-            personData.startTimestamp = datetime.fromtimestamp(int(m['location']['startTimestamp']))
-            personData.since = format_date(datetime.fromtimestamp(int(m['location']['since']))) # YOU NEED TO USE strftime('%Y-%m-%d %H:%M:%S') TO USE THESE DATETIME OBJECTs!!!!
+            if m['location'] is not None:
+                if debugMode == True: print("\tName:", m['firstName'],m['lastName'])
+                personData.firstName = m['firstName']
+                personData.lastName = m['lastName']
+                avatar = m['avatar']
+                email = m['loginEmail']
+                phone = m['loginPhone']
+                if debugMode == True: print("\tLocation:" , m['location']['shortAddress'], m['location']['address2'])
+                personData.startTimestamp = datetime.fromtimestamp(int(m['location']['startTimestamp']))
+                personData.since = format_date(datetime.fromtimestamp(int(m['location']['since']))) # YOU NEED TO USE strftime('%Y-%m-%d %H:%M:%S') TO USE THESE DATETIME OBJECTs!!!!
 
-            personData.latitude = m['location']['latitude']
-            personData.longitude = m['location']['longitude']
-            personData.inTransit = m['location']['inTransit']
-            personData.speed = m['location']['speed']
-            if debugMode == True: print("\tBattery level:" , m['location']['battery'] +"%")
-            personData.batteryLevel = m['location']['battery']
-            if debugMode == True: print("\tCharging?", m['location']['charge'])
-            personData.batteryCharging = m['location']['charge']
-            if debugMode == True: print("\t")
-            if save == True:
-                personData.saveMyFile()
+                personData.latitude = m['location']['latitude']
+                personData.longitude = m['location']['longitude']
+                personData.inTransit = m['location']['inTransit']
+                personData.speed = m['location']['speed']
+                if debugMode == True: print("\tBattery level:" , m['location']['battery'] +"%")
+                personData.batteryLevel = m['location']['battery']
+                if debugMode == True: print("\tCharging?", m['location']['charge'])
+                personData.batteryCharging = m['location']['charge']
+                if debugMode == True: print("\t")
+                if save == True:
+                    personData.saveMyFile()
+                else:
+                    avatarList.append(avatar)
+                    emailList.append(email)
             else:
-                avatarList.append(avatar)
-                emailList.append(email)
+                print("User: " + m['firstName'] + " is offline...\n | Continuing...")
                 
     if save == False:
         return avatarList,emailList
 
-            
-def prepareEmail():
-    from mailer import groupEmail
-    global sundayFlag
-    time = datetime.now(tz).hour
-    now = datetime.now(tz)
-    weekday = datetime.weekday(now) 
-    if weekday == 6:
-        if sundayFlag != True:
-            if time >= 15:
-                sundayFlag = True
-                print("Sending the emails out!\n")
-                groupEmail()
-
-    else:
-        sundayFlag = False
-    
-
-                   
+                
 if __name__ == "__main__":
     while True:
         try:
@@ -199,7 +193,6 @@ if __name__ == "__main__":
             # break the collect data json decoder because it cant handle blank json files. 
             # actually I'm going to go handle those errors right now 11/9/23 11:24 AM lol
             sleep(30)
-            #prepareEmail()
             sleep(25)
 
         except KeyboardInterrupt:
