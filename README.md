@@ -25,14 +25,11 @@ Make sure you add your information to ```constants.py```  in order to effectivel
 - gmail_SENDING_appPass = this is the [app password you can generate](https://itsupport.umd.edu/itsupport?id=kb_article_view&sysparm_article=KB0015112) for the gmail account that allows it to send and receive mail.
 
 
-You will need to create sub-folders within the logs folder, one for each member's ***first*** name in your group's circle.
 
-> _For example_
-```
-   Triangular-inator/logs/Bob/{logs will be made here for Bob}
-   Triangular-inator/logs/Dylan/{logs will be made here for Dylan}
-   Triangular-inator/logs/Pete/{logs will be made here for Pete}
-```
+~You will need to create sub-folders within the logs folder, one for each member's ***first*** name in your group's circle.~
+
+^ No longer needed! The program does this automatically and now supports new users joining the circle! If a user joins the circle, a folder will automatically be made will start logging.
+
 # Requirements
 
 Ensure you have [python installed](https://www.python.org/downloads/) (>3.0), then open a terminal and run -
@@ -54,7 +51,8 @@ logger360 logs the following:
 - date & time
 - if person is currently in transit
 - geographic speed
-- timestamps for arriving / leaving a location
+- timestamps for arriving
+- Duration of which you've stayed there
 
 Visualizer is for viewing any and all data that is collected in the csv files. just ensure it is in a directory that has a proper logs folder format (as mentioned above) as well as the csv files and it should run without a problem.
 
