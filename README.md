@@ -1,7 +1,7 @@
 # Triangular-inator
 Uses life360 API to access circle data, and store it away in daily .csv files for later viewing, data analysis, and group notifications and records!
 
-### Credits to Harper Reed  (```https://github.com/pnbruckner/life360.git```) for creating the life360 client I used for this project.
+### Credits to Harper Reed & Phil Bruckner (```https://github.com/pnbruckner/life360.git```) for creating the framework life360 client I added to for this project.
 
 ## Setup
 
@@ -39,7 +39,7 @@ This will install all requirements.
 
 
 
-The ```life360.py``` file is the framework to actually connect to life-360. ***I did not make this.*** However every other file in this project is original.
+The ```life360.py``` file is the framework to actually connect to life-360's servers. ***I did not make this.*** However every other file in this project is original.
 
 logger360 is intended to run headlessly on a computer with constant internet access. It will continuously scrape life360's server for data on your circle, at which point it will log this data to a .csv file.
 
