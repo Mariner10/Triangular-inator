@@ -3,12 +3,12 @@ import json
 
 class life360:
     
-    base_url = "https://api-cloudfront.life360.com/v3/"
-    token_url = "oauth2/token.json"
-    circles_url = "circles.json"
+    base_url = "https://api-cloudfront.life360.com/"
+    token_url = "v3/oauth2/token"
+    circles_url = "v4/circles"
     circle_url = "circles/"
-    user_agent = "com.life360.android.safetymapd"
-    
+    user_agent = "com.life360.android.safetymapd/KOKO/23.49.0 android/13"
+
 
     def __init__(self, authorization_token=None, username=None, password=None):
         self.authorization_token = authorization_token
@@ -34,13 +34,10 @@ class life360:
                 print("Timed out")
                 self.make_request(self, url, params=None, method='GET', authheader=None)
         try:
+            
             return r.json()
-        except requests.exceptions.JSONDecodeError:
-            # Hey carter here, I needed to fix this in case we called too many times on accident.
-            # I'm not really sure how to *prevent* the API from returning a blank json so we are going to
-            # wait for like 10 minutes because when I was pulling my hair out debugging the only way I was able to
-            # test again was to wait 10 minutes or so. My best guess is that this is a cooldown for the user and pass for the API.
-            print("You are foolish! I told you not to lower the call time for the life360 api. You are now locked out of the API (not by me <3 ) for calling too quickly.\nThe punishment for this crime is waiting 10 minutes because thats the only way I was able to do it before lol.")
+        except requests.exceptions.JSONDecodeError as E:
+            print(f"There has been an issue connecting to life360's servers! | {E}")
             from time import sleep
             sleep(600)
 
@@ -74,4 +71,19 @@ class life360:
         r = self.make_request(url=url, method='GET', authheader=authheader)
         return r
 
-   
+    def get_circle_members(self, circle_id):
+        authheader="bearer " + self.access_token
+        r = self.make_request(url = f"https://api-cloudfront.life360.com/v4/circles/{circle_id}/members".format(circle_id=circle_id), method="GET", authheader=authheader)["members"]
+        return r
+
+    def get_circle_places(self, circle_id):
+        authheader="bearer " + self.access_token
+        r = self.make_request(url = f"https://api-cloudfront.life360.com/v4/circles/{circle_id}/places".format(circle_id=circle_id), method="GET", authheader=authheader)["places"]
+        return r
+
+    def update_user(self, circle_id, member_id):
+        authheader="bearer " + self.access_token
+        request = self.make_request(url = f"https://api-cloudfront.life360.com/v3/circles/{circle_id}/members/{member_id}/request".format(circle_id=circle_id,member_id=member_id), method="POST", params={"type": "location"}, authheader=authheader)
+        requestID = request["requestId"]
+        r = self.make_request(url = f"https://api-cloudfront.life360.com/v3/circles/members/request/{requestID}".format(requestID=requestID), method="GET", params={"type": "location"}, authheader=authheader)
+        return r

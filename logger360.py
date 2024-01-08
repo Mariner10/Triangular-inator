@@ -146,30 +146,48 @@ def collect_data(save):
         #Grab some circles returns json
         circles =  api.get_circles()
         #grab id
-        id = circles[0]['id']
+        circleID = circles[0]['id']
         #grab your circle
-        circle = api.get_circle(id)
-        #if debugMode == True: print(circle) #this is a lot of output...
-        for m in circle['members']:
-            if m['location'] is not None:
-                if debugMode == True: print("\tName:", m['firstName'],m['lastName'])
-                personData.firstName = m['firstName']
-                personData.lastName = m['lastName']
-                avatar = m['avatar']
-                email = m['loginEmail']
-                phone = m['loginPhone']
-                if debugMode == True: print("\tLocation:" , m['location']['shortAddress'], m['location']['address2'])
-                personData.startTimestamp = datetime.fromtimestamp(int(m['location']['startTimestamp']))
-                personData.since = format_date(datetime.fromtimestamp(int(m['location']['since']))) # YOU NEED TO USE strftime('%Y-%m-%d %H:%M:%S') TO USE THESE DATETIME OBJECTs!!!!
+        circle = api.get_circle(circleID)
+        members = api.get_circle_members(circleID)
+        
+        #attempts at getting data from request after API change.
 
-                personData.latitude = m['location']['latitude']
-                personData.longitude = m['location']['longitude']
-                personData.inTransit = m['location']['inTransit']
-                personData.speed = m['location']['speed']
-                if debugMode == True: print("\tBattery level:" , m['location']['battery'] +"%")
-                personData.batteryLevel = m['location']['battery']
-                if debugMode == True: print("\tCharging?", m['location']['charge'])
-                personData.batteryCharging = m['location']['charge']
+        '''for m in circle['members']:
+            if m['location'] is not None:''' # No longer works
+
+
+        personDict = {}
+        for mem in members:
+            personDict.setdefault(mem["firstName"], []).append([mem["firstName"],mem["lastName"], mem["id"], mem["loginEmail"], mem["avatar"],mem["loginPhone"]])
+            
+    
+
+        for name,data in personDict.items():
+            print(name + "\n" + str(data))
+            userID = data[0][2]
+            info = api.update_user(circleID,userID)
+            print(info)
+
+            if info['location'] != None:
+                personData.firstName = data[0][0]
+                personData.lastName = data[0][1]
+                avatar = data[0][4]
+                email = data[0][3]
+                phone = data[0][5]
+
+                
+                personData.startTimestamp = datetime.fromtimestamp(int(info['location']['startTimestamp']))
+                personData.since = format_date(datetime.fromtimestamp(int(info['location']['since']))) # YOU NEED TO USE strftime('%Y-%m-%d %H:%M:%S') TO USE THESE DATETIME OBJECTs!!!!
+
+                personData.latitude = info['location']['latitude']
+                personData.longitude = info['location']['longitude']
+                personData.inTransit = info['location']['inTransit']
+                personData.speed = info['location']['speed']
+                if debugMode == True: print("\tBattery level:" , info['location']['battery'] +"%")
+                personData.batteryLevel = info['location']['battery']
+                if debugMode == True: print("\tCharging?", info['location']['charge'])
+                personData.batteryCharging = info['location']['charge']
                 if debugMode == True: print("\t")
                 if save == True:
                     personData.saveMyFile()
@@ -177,8 +195,12 @@ def collect_data(save):
                     avatarList.append(avatar)
                     emailList.append(email)
             else:
-                print("User: " + m['firstName'] + " is offline...\n | Continuing...")
-                
+                print("User: " + data[0][0] + " is offline...\n | Continuing...")
+            
+
+        
+        #if debugMode == True: print(circle) #this is a lot of output..
+              
     if save == False:
         return avatarList,emailList
 
@@ -191,8 +213,7 @@ if __name__ == "__main__":
             # the Life360 API has a limit to how many requests you can make per minute.
             # Exceeding this limit will cause life360 to return with a blank json, which will
             # break the collect data json decoder because it cant handle blank json files. 
-            # actually I'm going to go handle those errors right now 11/9/23 11:24 AM lol
-            sleep(30)
+            # I'm going to go handle those errors right now 11/9/23 11:24 AM
             sleep(25)
 
         except KeyboardInterrupt:
